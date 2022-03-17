@@ -4,7 +4,12 @@ import Navbar from "./components/Navbar";
 import SignIn from "./components/user/SignIn";
 import SignUp from "./components/user/SignUp";
 import Home from "./components/blog/Home";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useState } from "react";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -34,6 +39,7 @@ function App() {
         <div className="App">
           <Navbar deleteContext={deleteContext} />
           <Routes>
+            <Route exact path="/" element={<Navigate to="/login" />} />
             <Route
               exact
               path="/login"
