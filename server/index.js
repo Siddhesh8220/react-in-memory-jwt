@@ -3,12 +3,22 @@ require("dotenv").config();
 const routes = require("./routes");
 const cors = require("cors");
 var morgan = require("morgan");
+var cookieParser = require("cookie-parser");
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  //To allow requests from client
+  origin: ["http://localhost:3000"],
+  credentials: true,
+  exposedHeaders: ["set-cookie"],
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.use(morgan("tiny"));
 

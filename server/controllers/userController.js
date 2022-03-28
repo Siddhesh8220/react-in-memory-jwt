@@ -4,6 +4,8 @@ const userService = require("../services/userService");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
+let refreshTokens = [];
+
 async function loginUser(req, res, next) {
   try {
     const email = req.body.email;
@@ -14,11 +16,23 @@ async function loginUser(req, res, next) {
         { email: user.email },
         process.env.ACCESS_TOKEN_SECRET
       );
+      console.log("jwt frm logon", accessToken);
+      const refreshToken = jwt.sign(
+        { email: user.email },
+        process.env.REFRESH_TOKEN_SECRET
+      );
+      refreshTokens.push(refreshToken);
+
       res.json({
-        status: 200,
         accessToken: accessToken,
         user: { id: user.id, username: user.username, email: user.email },
       });
+      res
+        .cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: true,
+        })
+        .send();
     } else {
       res.json({ status: 404, message: "User not found" });
     }
@@ -45,14 +59,21 @@ async function registerUser(req, res, next) {
     };
 
     await userService.insertUser(user);
-
     const accessToken = jwt.sign(
-      { email: email },
+      { email: user.email },
       process.env.ACCESS_TOKEN_SECRET
     );
-    res.status = 200;
+    console.log("jwt frm register", accessToken);
+    const refreshToken = jwt.sign(
+      { email: user.email },
+      process.env.REFRESH_TOKEN_SECRET
+    );
+    refreshTokens.push(refreshToken);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
     res.json({
-      status: 200,
       accessToken: accessToken,
       user: { id: user.id, username: user.username, email: user.email },
     });
@@ -64,4 +85,5 @@ async function registerUser(req, res, next) {
 module.exports = {
   loginUser,
   registerUser,
+  refreshTokens,
 };

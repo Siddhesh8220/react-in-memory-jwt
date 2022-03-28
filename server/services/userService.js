@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 
 users = [];
+let refreshTokens = [];
 
 async function authenticateUser(email, password) {
   const user = users.find((user) => {

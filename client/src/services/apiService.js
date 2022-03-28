@@ -1,9 +1,10 @@
 import axios from "axios";
 import { API_URL } from "../config";
+import jwtManager from "../services/jwtManager";
 
 async function getHeaders() {
-  const token = await localStorage.getItem("jwt");
-  console.log("1", token);
+  const token = jwtManager.getToken();
+  console.log("header token", token);
   const payloadHeader = {
     headers: {
       "Content-Type": "application/json",
@@ -18,6 +19,16 @@ export async function getResource(url) {
   console.log(payloadHeader);
   try {
     const res = await axios.get(`${API_URL}/${url}`, payloadHeader);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function postResource(url, payload) {
+  const payloadHeader = await getHeaders();
+  try {
+    const res = await axios.post(`${API_URL}/${url}`, payloadHeader, payload);
     return res.data;
   } catch (err) {
     console.log(err);

@@ -36,6 +36,7 @@ function SignUp(props) {
     };
     try {
       const res = await registerUser(user);
+      console.log(res);
       changeContext(res.user, res.accessToken);
     } catch (error) {
       console.log(error);
